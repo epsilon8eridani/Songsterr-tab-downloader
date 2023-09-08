@@ -13,6 +13,33 @@ public class Parser
         _settings = settings;
     }
 
+    public async Task<List<string>?> ParseSearchUrls(string url)
+    {
+        if (string.IsNullOrEmpty(url)) return null;
+        if (!url.StartsWith(_settings.SiteUrl)) return null;
+        
+        var doc = await url
+            .WithHeaders(_settings.Headers)
+            .GetStringAsync()
+            .GetHtmlDocument();
+
+        var tabs = doc?.DocumentNode.SelectNodes("//div[@id='search-wrap']//div[@*='songs']/a");
+        if (tabs == null) return null;
+
+        var result = new List<string>();
+        
+        foreach (var tabNode in tabs)
+        {
+            var tabUrl = _settings.SiteUrl + tabNode.Attributes?["href"]?.Value;
+            if (tabUrl != _settings.SiteUrl)
+            {
+                result.Add(tabUrl);
+            }
+        }
+
+
+        return result;
+    }
     public async Task<Tab?> ParseTab(string url)
     {
         if (string.IsNullOrEmpty(url)) return null;

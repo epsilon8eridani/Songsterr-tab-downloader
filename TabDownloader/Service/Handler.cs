@@ -14,14 +14,26 @@ public class Handler
         _settings = settings;
     }
 
-    public async Task DownloadTab()
+    public async Task DownloadTabs(string? searchUrl = null)
     {
-        var tabUrl = AnsiConsole.Prompt(
-            new TextPrompt<string>("[purple]enter a[/] [green]link[/]")
-                .PromptStyle("purple")
-                .ValidationErrorMessage("[red]entered link is incorrect[/]")
-                .Validate(url =>
-                    Uri.IsWellFormedUriString(url, UriKind.Absolute) && url.StartsWith(_settings.SiteUrl)));
+        searchUrl ??= Utils.GetUrlFromUser();
+
+        var tabUrls = await _parser.ParseSearchUrls(searchUrl);
+        if (tabUrls != null)
+        {
+            for (var index = 0; index < tabUrls.Count; index++)
+            {
+                var tabUrl = tabUrls[index];
+                await DownloadTab(tabUrl);
+                await Task.Delay(500);
+                AnsiConsole.MarkupLine($"[purple]{index + 1}/{tabUrls.Count}[/]");
+            }
+        }
+    }
+
+    public async Task DownloadTab(string? tabUrl = null)
+    {
+        tabUrl ??= Utils.GetUrlFromUser();
 
         var tab = await _parser.ParseTab(tabUrl);
         if (tab != null)
@@ -32,7 +44,6 @@ public class Handler
                 .DownloadFileAsync(folder, tab.GetFileName());
             if (!string.IsNullOrEmpty(downloadedPath))
             {
-                AnsiConsole.MarkupLine("[green]successfully downloaded to:[/]");
                 AnsiConsole.Write(new TextPath(downloadedPath)
                     .RootColor(Color.Yellow)
                     .SeparatorColor(Color.Yellow)

@@ -21,15 +21,19 @@ public class ConsoleMenu
             var prompt = AnsiConsole.Prompt(
                 new SelectionPrompt<string>()
                     .AddChoices(
-                        "download from url",
+                        "download single tab from url",
+                        "download multiple tabs from search url",
                         "exit"
                     ));
             try
             {
                 switch (prompt)
                 {
-                    case "download from url":
+                    case "download single tab from url":
                         await _handler.DownloadTab();
+                        break;
+                    case "download multiple tabs from search url":
+                        await _handler.DownloadTabs();
                         break;
                     case "exit":
                         _lifetime.StopApplication();
