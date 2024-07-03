@@ -27,6 +27,7 @@ public class ConsoleMenu
                     ));
             try
             {
+                await _handler.OpenSite();
                 switch (prompt)
                 {
                     case "download single tab from url":

@@ -7,10 +7,12 @@ namespace TabDownloader.Service;
 public class Parser
 {
     private readonly AppSettings _settings;
+    private readonly CookieJar _cookie;
 
-    public Parser(AppSettings settings)
+    public Parser(AppSettings settings, CookieJar cookie)
     {
         _settings = settings;
+        _cookie = cookie;
     }
 
     public async Task<List<string>?> ParseSearchUrls(string url)
@@ -20,6 +22,7 @@ public class Parser
         
         var doc = await url
             .WithHeaders(_settings.Headers)
+            .WithCookies(_cookie)
             .GetStringAsync()
             .GetHtmlDocument();
 
@@ -47,6 +50,7 @@ public class Parser
 
         var doc = await url
             .WithHeaders(_settings.Headers)
+            .WithCookies(_cookie)
             .GetStringAsync()
             .GetHtmlDocument();
 
@@ -58,10 +62,11 @@ public class Parser
         var revisionId = selectToken?["revisionId"]?.ToString();
         var artist = selectToken?["artist"]?.ToString();
         var title = selectToken?["title"]?.ToString();
-
-        var xmlUrl = $"{_settings.SiteUrl}/a/ra/player/songrevision/{revisionId}.xml";
+        
+        var xmlUrl = $"{_settings.SiteUrl}/a/ra/player/songrevision/{revisionId}.xml"; // TODO
         var xml = await xmlUrl
             .WithHeaders(_settings.Headers)
+            .WithCookies(_cookie)
             .GetStringAsync();
         var xmlDoc = new XmlDocument();
         xmlDoc.LoadXml(xml);

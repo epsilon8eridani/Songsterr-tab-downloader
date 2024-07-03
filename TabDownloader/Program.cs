@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Flurl.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using TabDownloader;
@@ -16,6 +17,7 @@ await Host.CreateDefaultBuilder()
         services.AddSingleton<Parser>();
         var commandLineArgs = new CommandLineArgs { Args = Environment.GetCommandLineArgs() };
         services.AddSingleton(commandLineArgs);
+        services.AddSingleton<CookieJar>();
         services.AddSingleton<Handler>();
         services.AddSingleton<ConsoleMenu>();
     })

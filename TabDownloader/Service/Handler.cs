@@ -7,13 +7,22 @@ public class Handler
 {
     private readonly Parser _parser;
     private readonly AppSettings _settings;
+    private readonly CookieJar _cookies;
 
-    public Handler(Parser parser, AppSettings settings)
+    public Handler(Parser parser, AppSettings settings, CookieJar cookies)
     {
         _parser = parser;
         _settings = settings;
+        _cookies = cookies;
     }
 
+    public async Task OpenSite()
+    {
+        await _settings.SiteUrl
+            .WithHeaders(_settings.Headers)
+            .WithCookies(_cookies)
+            .GetStringAsync();
+    }
     public async Task DownloadTabs(string? searchUrl = null)
     {
         searchUrl ??= Utils.GetUrlFromUser();
@@ -41,6 +50,7 @@ public class Handler
             var folder = Path.Join("Tabs", tab.Artist);
             var downloadedPath = await tab.DownloadUrl
                 .WithHeaders(_settings.Headers)
+                .WithCookies(_cookies)
                 .DownloadFileAsync(folder, tab.GetFileName());
             if (!string.IsNullOrEmpty(downloadedPath))
             {
