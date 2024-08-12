@@ -45,7 +45,7 @@ public class Handler
         tabUrl ??= Utils.GetUrlFromUser();
 
         var tab = await _parser.ParseTab(tabUrl);
-        if (tab != null)
+        if (tab is not null)
         {
             var folder = Path.Join("Tabs", tab.Artist);
             var downloadedPath = await tab.DownloadUrl

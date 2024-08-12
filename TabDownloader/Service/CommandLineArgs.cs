@@ -2,5 +2,5 @@
 
 public record CommandLineArgs
 {
-    public string[] Args { get; set; }
+    public string[]? Args { get; set; }
 }

@@ -26,7 +26,7 @@ public class Parser
             .GetStringAsync()
             .GetHtmlDocument();
 
-        var tabs = doc?.DocumentNode.SelectNodes("//div[@id='search-wrap']//div[@*='songs']/a");
+        var tabs = doc?.DocumentNode.SelectNodes("//div[@id='search-wrap']//div[@*='songs']/a|//div[@id='artist-wrap']//div[@data-list='artist']/a");
         if (tabs == null) return null;
 
         var result = new List<string>();
@@ -58,26 +58,37 @@ public class Parser
 
         var script = doc.DocumentNode.SelectSingleNode("//script[@id='state']").InnerHtml;
         var json = JObject.Parse(script);
+        
         var selectToken = json.SelectToken("meta.current");
         var revisionId = selectToken?["revisionId"]?.ToString();
         var artist = selectToken?["artist"]?.ToString();
         var title = selectToken?["title"]?.ToString();
-        
-        var xmlUrl = $"{_settings.SiteUrl}/a/ra/player/songrevision/{revisionId}.xml"; // TODO
-        var xml = await xmlUrl
-            .WithHeaders(_settings.Headers)
-            .WithCookies(_cookie)
-            .GetStringAsync();
-        var xmlDoc = new XmlDocument();
-        xmlDoc.LoadXml(xml);
-        var tabId = xmlDoc.SelectSingleNode("/SongRevision/tab/guitarProTab")?.Attributes?["id"]?.InnerText;
-        var tabUrl = xmlDoc.SelectSingleNode("/SongRevision/tab/guitarProTab/attachmentUrl")?.InnerText;
+
+        var tabUrl = selectToken?["source"]?.ToString();
         var tabExt = tabUrl?.Split('.').Last();
 
-        if (string.IsNullOrEmpty(artist) || string.IsNullOrEmpty(title) ||
-            string.IsNullOrEmpty(tabId) || string.IsNullOrEmpty(tabUrl) ||
-            string.IsNullOrEmpty(tabExt)) return null;
+        if (revisionId == null || artist == null || title == null || tabUrl == null || tabExt == null)
+        {
+            return null;
+        }
+        
+        return new Tab(revisionId, url, artist, title, tabExt);
 
-        return new Tab(tabId, tabUrl, artist, title, tabExt);
+        // var xmlUrl = $"{_settings.SiteUrl}/a/ra/player/songrevision/{revisionId}.xml"; // TODO
+        // var xml = await xmlUrl
+        //     .WithHeaders(_settings.Headers)
+        //     .WithCookies(_cookie)
+        //     .GetStringAsync();
+        // var xmlDoc = new XmlDocument();
+        // xmlDoc.LoadXml(xml);
+        // var tabId = xmlDoc.SelectSingleNode("/SongRevision/tab/guitarProTab")?.Attributes?["id"]?.InnerText;
+        // var tabUrl = xmlDoc.SelectSingleNode("/SongRevision/tab/guitarProTab/attachmentUrl")?.InnerText;
+        // var tabExt = tabUrl?.Split('.').Last();
+        //
+        // if (string.IsNullOrEmpty(artist) || string.IsNullOrEmpty(title) ||
+        //     string.IsNullOrEmpty(tabId) || string.IsNullOrEmpty(tabUrl) ||
+        //     string.IsNullOrEmpty(tabExt)) return null;
+
+        //return new Tab(tabId, tabUrl, artist, title, tabExt);
     }
 }
