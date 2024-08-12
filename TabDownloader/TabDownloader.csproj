@@ -7,6 +7,10 @@
         <Nullable>enable</Nullable>
         <DockerDefaultTargetOS>Windows</DockerDefaultTargetOS>
         <LangVersion>12</LangVersion>
+        <Version>1.0.1</Version>
+        <Title>TabDownloader</Title>
+        <AssemblyVersion>1.0.1</AssemblyVersion>
+        <FileVersion>1.0.1</FileVersion>
     </PropertyGroup>
 
     <ItemGroup>
