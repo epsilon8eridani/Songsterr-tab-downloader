@@ -73,22 +73,5 @@ public class Parser
         }
         
         return new Tab(revisionId, url, artist, title, tabExt);
-
-        // var xmlUrl = $"{_settings.SiteUrl}/a/ra/player/songrevision/{revisionId}.xml"; // TODO
-        // var xml = await xmlUrl
-        //     .WithHeaders(_settings.Headers)
-        //     .WithCookies(_cookie)
-        //     .GetStringAsync();
-        // var xmlDoc = new XmlDocument();
-        // xmlDoc.LoadXml(xml);
-        // var tabId = xmlDoc.SelectSingleNode("/SongRevision/tab/guitarProTab")?.Attributes?["id"]?.InnerText;
-        // var tabUrl = xmlDoc.SelectSingleNode("/SongRevision/tab/guitarProTab/attachmentUrl")?.InnerText;
-        // var tabExt = tabUrl?.Split('.').Last();
-        //
-        // if (string.IsNullOrEmpty(artist) || string.IsNullOrEmpty(title) ||
-        //     string.IsNullOrEmpty(tabId) || string.IsNullOrEmpty(tabUrl) ||
-        //     string.IsNullOrEmpty(tabExt)) return null;
-
-        //return new Tab(tabId, tabUrl, artist, title, tabExt);
     }
 }

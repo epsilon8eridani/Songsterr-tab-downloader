@@ -4,7 +4,12 @@ public record Tab(string RevisionId, string DownloadUrl, string Artist, string T
 {
     public string GetFileName()
     {
-        return $"{Artist} - {Title} ({RevisionId}).{Extension}";
+        var fileName = $"{Artist} - {Title} ({RevisionId}).{Extension}";
+        foreach (var invalidChar in Path.GetInvalidFileNameChars())
+        {
+            fileName = fileName.Replace(invalidChar.ToString(), "");
+        }
+        return fileName;
     }
 }
 
