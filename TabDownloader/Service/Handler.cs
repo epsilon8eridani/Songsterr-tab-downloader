@@ -48,10 +48,12 @@ public class Handler
         if (tab is not null)
         {
             var folder = Path.Join("Tabs", tab.Artist);
+            var invalidChars = Path.GetInvalidFileNameChars();
+            var safeFileName = new string(tab.GetFileName().Select(ch => invalidChars.Contains(ch) ? '_' : ch).ToArray());
             var downloadedPath = await tab.DownloadUrl
                 .WithHeaders(_settings.Headers)
                 .WithCookies(_cookies)
-                .DownloadFileAsync(folder, tab.GetFileName());
+                .DownloadFileAsync(folder, safeFileName);
             if (!string.IsNullOrEmpty(downloadedPath))
             {
                 AnsiConsole.Write(new TextPath(downloadedPath)
